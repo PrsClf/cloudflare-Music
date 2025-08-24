@@ -1,13 +1,613 @@
-<html lang="zh">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Direct Upload Demo | Cloudflare Pages</title>
-    <link href="style.css" rel="stylesheet" />
-  </head>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SonicFuse - 音乐的无限可能</title>
+    <!-- 引入Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- 引入Font Awesome -->
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <!-- 配置Tailwind自定义主题 -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#6C5CE7', // 主色调：紫色，代表创意和艺术
+                        secondary: '#00B894', // 辅助色：青绿色，代表活力
+                        dark: '#2D3436',
+                        light: '#F8F9FA'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <!-- 自定义工具类 -->
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .content-auto {
+                content-visibility: auto;
+            }
+            .text-shadow {
+                text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            }
+            .text-gradient {
+                background-clip: text;
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+            }
+            .backdrop-blur {
+                backdrop-filter: blur(8px);
+            }
+        }
+    </style>
+    <style>
+        /* 全局动画定义 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulse-soft {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .animate-float {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .animate-pulse-soft {
+            animation: pulse-soft 2s ease-in-out infinite;
+        }
+        
+        .animate-fade-in {
+            animation: fadeIn 0.6s ease-out forwards;
+        }
+        
+        /* 平滑滚动 */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* 进度条样式 */
+        .progress-bar {
+            height: 4px;
+            background: linear-gradient(90deg, #6C5CE7, #00B894);
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 50;
+            width: 0%;
+        }
+    </style>
+</head>
+<body class="bg-light text-dark font-sans">
+    <!-- 进度条 -->
+    <div class="progress-bar"></div>
 
-  <body>
-    man!
-  </body>
+    <!-- 导航栏 -->
+    <header id="navbar" class="fixed w-full z-40 transition-all duration-300">
+        <nav class="container mx-auto px-4 py-4 flex justify-between items-center backdrop-blur bg-white/80">
+            <a href="#" class="flex items-center space-x-2">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
+                    <i class="fa fa-music text-white text-xl"></i>
+                </div>
+                <span class="text-xl font-bold bg-gradient-to-r from-primary to-secondary text-gradient">SonicFuse</span>
+            </a>
+            
+            <!-- 桌面导航 -->
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="#features" class="font-medium hover:text-primary transition-colors">功能</a>
+                <a href="#download" class="font-medium hover:text-primary transition-colors">下载</a>
+                <!-- <a href="#testimonials" class="font-medium hover:text-primary transition-colors">用户评价</a> -->
+                <a href="#faq" class="font-medium hover:text-primary transition-colors">常见问题</a>
+            </div>
+            
+            <!-- 移动端菜单按钮 -->
+            <button id="menu-toggle" class="md:hidden text-2xl">
+                <i class="fa fa-bars"></i>
+            </button>
+        </nav>
+        
+        <!-- 移动端导航菜单 -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white shadow-lg absolute w-full">
+            <div class="container mx-auto px-4 py-4 flex flex-col space-y-4">
+                <a href="#features" class="font-medium hover:text-primary transition-colors py-2">功能</a>
+                <a href="#download" class="font-medium hover:text-primary transition-colors py-2">下载</a>
+                <!-- <a href="#testimonials" class="font-medium hover:text-primary transition-colors py-2">用户评价</a> -->
+                <a href="#faq" class="font-medium hover:text-primary transition-colors py-2">常见问题</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 英雄区域 -->
+    <section class="pt-32 pb-20 md:pt-40 md:pb-32 bg-gradient-to-b from-purple-50 to-white overflow-hidden">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0 animate-fade-in" style="animation-delay: 0.1s;">
+                    <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-bold leading-tight text-shadow mb-6">
+                        发现音乐的<br>
+                        <span class="bg-gradient-to-r from-primary to-secondary text-gradient">无限可能</span>
+                    </h1>
+                    <p class="text-lg md:text-xl text-gray-600 mb-8 max-w-lg">
+                        SonicFuse 让你随时随地享受高品质音乐，智能推荐、无损音质、离线收听，一切尽在掌握。
+                    </p>
+                    <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                        <a href="#download" class="px-8 py-3 bg-primary hover:bg-primary/90 text-white font-medium rounded-full shadow-lg shadow-primary/20 hover:shadow-xl hover:shadow-primary/30 transform hover:-translate-y-1 transition-all text-center">
+                            <i class="fa fa-download mr-2"></i>立即下载
+                        </a>
+                        <a href="#features" class="px-8 py-3 bg-white hover:bg-gray-50 text-primary border border-primary font-medium rounded-full shadow-md hover:shadow-lg transform hover:-translate-y-1 transition-all text-center">
+                            <i class="fa fa-info-circle mr-2"></i>了解更多
+                        </a>
+                    </div>
+                    <div class="mt-10 flex items-center space-x-4">
+                        <!-- <div class="flex -space-x-2">
+                            <img src="https://picsum.photos/id/64/100/100" alt="用户头像" class="w-10 h-10 rounded-full border-2 border-white">
+                            <img src="https://picsum.photos/id/65/100/100" alt="用户头像" class="w-10 h-10 rounded-full border-2 border-white">
+                            <img src="https://picsum.photos/id/66/100/100" alt="用户头像" class="w-10 h-10 rounded-full border-2 border-white">
+                            <img src="https://picsum.photos/id/67/100/100" alt="用户头像" class="w-10 h-10 rounded-full border-2 border-white">
+                        </div>
+                        <div>
+                            <div class="flex items-center text-yellow-400">
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star"></i>
+                                <i class="fa fa-star-half-o"></i>
+                                <span class="ml-2 text-gray-700 font-medium">4.8/5</span>
+                            </div>
+                            <p class="text-sm text-gray-500">来自超过 100 万用户的好评</p>
+                        </div> -->
+                    </div>
+                </div>
+                <div class="md:w-1/2 animate-float">
+                    <img src="./image.png" alt="SonicFuse音乐应用界面" class="rounded-2xl shadow-2xl mx-auto max-w-full">
+                </div>
+            </div>
+        </div>
+        
+        <!-- 波浪装饰 -->
+        <div class="absolute bottom-0 left-0 w-full overflow-hidden leading-0">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none" class="relative block w-full h-[60px]">
+                <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118.11,130.83,141.14,214.81,114.19Z" class="fill-white"></path>
+            </svg>
+        </div>
+    </section>
+
+    <!-- 合作伙伴 -->
+    <!-- <section class="py-12 bg-white">
+        <div class="container mx-auto px-4">
+            <p class="text-center text-gray-500 mb-8">受到行业领先企业的信任</p>
+            <div class="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-70">
+                <div class="text-3xl font-bold text-gray-400">Sony</div>
+                <div class="text-3xl font-bold text-gray-400">Warner</div>
+                <div class="text-3xl font-bold text-gray-400">Universal</div>
+                <div class="text-3xl font-bold text-gray-400">Spotify</div>
+                <div class="text-3xl font-bold text-gray-400">Apple</div>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- 功能特点 -->
+    <section id="features" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">为什么选择 SonicFuse？</h2>
+
+                <p class="text-lg text-gray-600">我们打造了最优质的音乐体验，让你与音乐更紧密地连接</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- 功能卡片 4 -->
+                <div class="bg-white rounded-xl p-8 shadow-lg hover:shadow-xl transition-shadow transform hover:-translate-y-1 duration-300">
+                    <div class="w-14 h-14 rounded-full bg-red-100 flex items-center justify-center mb-6">
+                        <i class="fa fa-microphone text-red-500 text-2xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-3">歌词识别</h3>
+                    <p class="text-gray-600">实时显示歌词，支持歌词跟随音乐滚动，让你轻松跟唱喜爱的歌曲，还能学习外语歌曲。</p>
+                </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <!-- 应用截图展示 -->
+    <!-- <section class="py-20 bg-white overflow-hidden">
+        <div class="container mx-auto px-4">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">直观易用的界面</h2>
+                <p class="text-lg text-gray-600">精心设计的用户界面，让音乐探索变得简单而愉悦</p>
+            </div>
+            
+            <div class="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
+                <img src="https://picsum.photos/id/20/400/800" alt="SonicFuse手机应用界面" class="w-64 md:w-72 rounded-3xl shadow-2xl animate-float" style="animation-delay: 0.2s;">
+                <img src="https://picsum.photos/id/21/400/800" alt="SonicFuse手机应用界面" class="w-64 md:w-72 rounded-3xl shadow-2xl animate-float" style="animation-delay: 0.5s;">
+                <img src="https://picsum.photos/id/22/400/800" alt="SonicFuse手机应用界面" class="w-64 md:w-72 rounded-3xl shadow-2xl animate-float" style="animation-delay: 0.8s;">
+            </div>
+        </div>
+    </section> -->
+
+    <!-- 下载区域 -->
+    <section id="download" class="py-20 bg-gradient-to-br from-primary/90 to-primary text-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">立即获取 SonicFuse</h2>
+                <p class="text-lg text-white/80">支持多种设备和平台，随时随地享受音乐</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
+                <!-- 安卓下载 -->
+                <!-- <div class="bg-white/10 backdrop-blur rounded-xl p-8 text-center hover:bg-white/20 transition-colors transform hover:-translate-y-1 duration-300">
+                    <div class="w-16 h-16 mx-auto mb-6 bg-white/20 rounded-full flex items-center justify-center">
+                        <i class="fa fa-android text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">Android</h3>
+                    <p class="text-white/80 mb-6">适用于 Android 6.0 及以上版本</p>
+                    <a href="#" class="inline-block px-6 py-3 bg-white text-primary font-medium rounded-full hover:bg-gray-100 transition-colors">
+                        <i class="fa fa-download mr-2"></i>Google Play
+                    </a>
+                    <a href="#" class="block mt-4 text-white/90 hover:text-white transition-colors">
+                        <i class="fa fa-file-apk-o mr-2"></i>直接下载 APK
+                    </a>
+                </div> -->
+                
+                <!-- iOS下载 -->
+                <!-- <div class="bg-white/10 backdrop-blur rounded-xl p-8 text-center hover:bg-white/20 transition-colors transform hover:-translate-y-1 duration-300">
+                    <div class="w-16 h-16 mx-auto mb-6 bg-white/20 rounded-full flex items-center justify-center">
+                        <i class="fa fa-apple text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">iOS</h3>
+                    <p class="text-white/80 mb-6">适用于 iOS 12.0 及以上版本</p>
+                    <a href="#" class="inline-block px-6 py-3 bg-white text-primary font-medium rounded-full hover:bg-gray-100 transition-colors">
+                        <i class="fa fa-download mr-2"></i>App Store
+                    </a>
+                </div> -->
+                
+                <!-- 桌面下载 -->
+                <div class="bg-white/10 backdrop-blur rounded-xl p-8 text-center hover:bg-white/20 transition-colors transform hover:-translate-y-1 duration-300">
+                    <div class="w-16 h-16 mx-auto mb-6 bg-white/20 rounded-full flex items-center justify-center">
+                        <i class="fa fa-desktop text-3xl"></i>
+                    </div>
+                    <h3 class="text-xl font-bold mb-2">桌面版</h3>
+                    <p class="text-white/80 mb-6">支持 Windows</p>
+                    <a href="https://fast-waller.github.io/download/net9.0-windows.rar" class="inline-block px-6 py-3 bg-white text-primary font-medium rounded-full hover:bg-gray-100 transition-colors">
+                        <i class="fa fa-download mr-2"></i>下载
+                    </a>
+                    <!-- <a href="javascript:void(0);" onclick="doDownload()"  class="block mt-4 text-white/90 hover:text-white transition-colors" onclick="doDownload()">
+                        <i class="fa fa-file-apk-o mr-2"></i>直接下载 APK
+                    </a> -->
+                </div>
+            </div>
+            
+            <!-- <div class="mt-16 text-center">
+                <p class="text-white/80 mb-6">扫描二维码下载移动应用</p>
+                <div class="inline-block bg-white p-4 rounded-lg">
+                    <img src="https://picsum.photos/id/100/200/200" alt="SonicFuse下载二维码" class="w-40 h-40">
+                </div>
+            </div>
+        </div> -->
+    </section>
+
+    <!-- 用户评价 -->
+    <!-- <section id="testimonials" class="py-20 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">用户的声音</h2>
+                <p class="text-lg text-gray-600">听听我们的用户怎么说</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"> -->
+                <!-- 评价 1 -->
+                <!-- <div class="bg-white rounded-xl p-8 shadow-lg">
+                    <div class="flex text-yellow-400 mb-4">
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                    </div>
+                    <p class="text-gray-600 mb-6">"SonicFuse 的音质真的太棒了，比我用过的其他音乐应用都要好。智能推荐功能也很精准，帮我发现了很多喜欢的新歌。"</p>
+                    <div class="flex items-center">
+                        <img src="https://picsum.photos/id/91/100/100" alt="用户头像" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-bold">李明</h4>
+                            <p class="text-gray-500 text-sm">使用 1 年</p>
+                        </div>
+                    </div>
+                </div> -->
+                
+                <!-- 评价 2 -->
+                <!-- <div class="bg-white rounded-xl p-8 shadow-lg">
+                    <div class="flex text-yellow-400 mb-4">
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                    </div>
+                    <p class="text-gray-600 mb-6">"离线下载功能对我来说太重要了，每天通勤的时候都能听音乐，不用担心中途断网。界面设计也很简洁美观，操作非常流畅。"</p>
+                    <div class="flex items-center">
+                        <img src="https://picsum.photos/id/92/100/100" alt="用户头像" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-bold">张华</h4>
+                            <p class="text-gray-500 text-sm">使用 8 个月</p>
+                        </div>
+                    </div>
+                </div> -->
+                
+                <!-- 评价 3 -->
+                <!-- <div class="bg-white rounded-xl p-8 shadow-lg">
+                    <div class="flex text-yellow-400 mb-4">
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star"></i>
+                        <i class="fa fa-star-half-o"></i>
+                    </div>
+                    <p class="text-gray-600 mb-6">"作为一个音乐爱好者，我非常喜欢 SonicFuse 的音效调节功能，可以根据不同类型的音乐调整音效，获得最佳的听觉体验。歌词显示也很及时准确。"</p>
+                    <div class="flex items-center">
+                        <img src="https://picsum.photos/id/93/100/100" alt="用户头像" class="w-12 h-12 rounded-full mr-4">
+                        <div>
+                            <h4 class="font-bold">王芳</h4>
+                            <p class="text-gray-500 text-sm">使用 6 个月</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section> -->
+
+    <!-- 常见问题 -->
+    <section id="faq" class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-4">常见问题</h2>
+                <p class="text-lg text-gray-600">你可能想知道的一些问题</p>
+            </div>
+            
+            <div class="max-w-3xl mx-auto">
+                <div class="space-y-6">
+                    <!-- FAQ 项目 1 -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <button class="faq-toggle w-full flex justify-between items-center p-6 text-left bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <span class="font-bold text-lg">SonicFuse 是免费的吗？</span>
+                            <i class="fa fa-chevron-down text-gray-500 transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content hidden p-6 pt-0 border-t border-gray-200">
+                            <p class="text-gray-600">SonicFuse 只提供免费服务，不包含任何增值服务</p>
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ 项目 2 -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <button class="faq-toggle w-full flex justify-between items-center p-6 text-left bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <span class="font-bold text-lg">我可以在多个设备上使用同一个账号吗？</span>
+                            <i class="fa fa-chevron-down text-gray-500 transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content hidden p-6 pt-0 border-t border-gray-200">
+                            <p class="text-gray-600">此程序不使用账号</p>
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ 项目 3 -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <button class="faq-toggle w-full flex justify-between items-center p-6 text-left bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <span class="font-bold text-lg">下载的音乐可以永久保存吗？</span>
+                            <i class="fa fa-chevron-down text-gray-500 transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content hidden p-6 pt-0 border-t border-gray-200">
+                            <p class="text-gray-600">不提供下载功能</p>
+
+                        </div>
+                    </div>
+                    
+                    <!-- FAQ 项目 4 -->
+                    <div class="border border-gray-200 rounded-xl overflow-hidden">
+                        <button class="faq-toggle w-full flex justify-between items-center p-6 text-left bg-gray-50 hover:bg-gray-100 transition-colors">
+                            <span class="font-bold text-lg">SonicFuse 有哪些音乐库？</span>
+                            <i class="fa fa-chevron-down text-gray-500 transition-transform duration-300"></i>
+                        </button>
+                        <div class="faq-content hidden p-6 pt-0 border-t border-gray-200">
+                            <p class="text-gray-600">SonicFuse 使用热门歌曲作为音乐库</p>
+                        </div>
+                    </div>
+                    
+                    
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 行动召唤 -->
+    <section class="py-20 bg-gradient-to-r from-primary to-secondary text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-[clamp(1.8rem,3vw,2.5rem)] font-bold mb-6">开始你的音乐之旅</h2>
+            <p class="text-xl text-white/90 max-w-2xl mx-auto mb-10">加入数百万音乐爱好者的行列，体验最好的音乐应用</p>
+            <a href="#download" class="inline-block px-10 py-4 bg-white text-primary font-bold rounded-full shadow-xl hover:shadow-2xl transform hover:-translate-y-1 transition-all animate-pulse-soft">
+                <i class="fa fa-music mr-2"></i>免费下载，开始使用
+            </a>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="bg-dark text-white py-12">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+                <div>
+                    <div class="flex items-center space-x-2 mb-6">
+                        <div class="w-10 h-10 rounded-full bg-gradient-to-r from-primary to-secondary flex items-center justify-center">
+                            <i class="fa fa-music text-white text-xl"></i>
+                        </div>
+                        <span class="text-xl font-bold">SonicFuse</span>
+                    </div>
+                    <p class="text-gray-400 mb-6">让音乐成为生活的一部分，随时随地享受美好的听觉体验。</p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-colors">
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-colors">
+                            <i class="fa fa-twitter"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-colors">
+                            <i class="fa fa-instagram"></i>
+                        </a>
+                        <a href="#" class="w-10 h-10 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-colors">
+                            <i class="fa fa-youtube-play"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-6">快速链接</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">首页</a></li>
+                        <li><a href="#features" class="text-gray-400 hover:text-white transition-colors">功能</a></li>
+                        <li><a href="#download" class="text-gray-400 hover:text-white transition-colors">下载</a></li>
+                        <!-- <li><a href="#testimonials" class="text-gray-400 hover:text-white transition-colors">用户评价</a></li> -->
+                        <li><a href="#faq" class="text-gray-400 hover:text-white transition-colors">常见问题</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-6">支持</h4>
+                    <ul class="space-y-3">
+                        <li><a href="#faq" class="text-gray-400 hover:text-white transition-colors">帮助中心</a></li>
+                        <li><a href="javascript:void(0);" onclick="copyEmail()"class="text-gray-400 hover:text-white transition-colors">联系我们</a></li>
+                        <li><a href="./privacy.html" class="text-gray-400 hover:text-white transition-colors" target="_blank">隐私政策</a></li>
+                        <li><a href="./terms.html" class="text-gray-400 hover:text-white transition-colors" target="_blank">服务条款</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h4 class="text-lg font-bold mb-6">联系我们</h4>
+                    <ul class="space-y-3">
+                        <li class="flex items-start">
+                            <i class="fa fa-envelope text-primary mt-1 mr-3"></i>
+                            <a href="javascript:void(0);" onclick="copyEmail()" class="text-gray-400">support@gyxs.dpdns.org</a>
+
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 pt-8 text-center text-gray-500">
+                <p>&copy; 2023 FSGY  保留所有权利.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // 导航栏滚动效果
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                navbar.classList.add('bg-white', 'shadow-md');
+                navbar.classList.remove('bg-white/80');
+            } else {
+                navbar.classList.remove('bg-white', 'shadow-md');
+                navbar.classList.add('bg-white/80');
+            }
+        });
+        
+        // 移动端菜单切换
+        const menuToggle = document.getElementById('menu-toggle');
+        const mobileMenu = document.getElementById('mobile-menu');
+        
+        menuToggle.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            const icon = menuToggle.querySelector('i');
+            if (mobileMenu.classList.contains('hidden')) {
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            } else {
+                icon.classList.remove('fa-bars');
+                icon.classList.add('fa-times');
+            }
+        });
+        
+        // 点击移动端菜单项后关闭菜单
+        const mobileLinks = mobileMenu.querySelectorAll('a');
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                mobileMenu.classList.add('hidden');
+                const icon = menuToggle.querySelector('i');
+                icon.classList.remove('fa-times');
+                icon.classList.add('fa-bars');
+            });
+        });
+        
+        // FAQ 折叠功能
+        const faqToggles = document.querySelectorAll('.faq-toggle');
+        faqToggles.forEach(toggle => {
+            toggle.addEventListener('click', () => {
+                const content = toggle.nextElementSibling;
+                const icon = toggle.querySelector('i');
+                
+                content.classList.toggle('hidden');
+                icon.classList.toggle('rotate-180');
+                
+                // 关闭其他打开的FAQ项
+                faqToggles.forEach(otherToggle => {
+                    if (otherToggle !== toggle) {
+                        const otherContent = otherToggle.nextElementSibling;
+                        const otherIcon = otherToggle.querySelector('i');
+                        
+                        otherContent.classList.add('hidden');
+                        otherIcon.classList.remove('rotate-180');
+                    }
+                });
+            });
+        });
+        
+        // 页面滚动进度条
+        window.addEventListener('scroll', () => {
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.querySelector('.progress-bar').style.width = scrolled + '%';
+        });
+        
+        // 元素进入视口时的动画
+        const animateOnScroll = () => {
+            const elements = document.querySelectorAll('.grid > div');
+            
+            elements.forEach(element => {
+                const elementPosition = element.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if (elementPosition < windowHeight - 100) {
+                    element.classList.add('animate-fade-in');
+                }
+            });
+        };
+        
+        // 初始加载时检查
+        window.addEventListener('load', animateOnScroll);
+        // 滚动时检查
+        window.addEventListener('scroll', animateOnScroll);
+
+        function copyEmail() {
+            const email = 'support@gyxs.dpdns.org';
+            navigator.clipboard.writeText(email).then(() => {
+                alert('邮箱已复制到剪贴板');
+            });
+        }
+
+        function doDownload() {
+            window.location.href = 'https://www.gyxs.dpdns.org/download.html';
+        }
+    </script>
+</body>
 </html>
